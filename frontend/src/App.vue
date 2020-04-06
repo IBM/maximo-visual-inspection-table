@@ -7,8 +7,8 @@
 
   <div id="app">
 
-    <div id="menu">
-      <div style="margin-top:10px">
+    <div id="menu" style="margin-top:40px">
+      <div >
         <!-- <vue-button type="default" v-on:click="goHome">Home</vue-button> -->
         <vue-button type="default" v-on:click="showModal({'name': 'upload-modal', 'title': 'Upload CSV File'})">Import CSV file</vue-button>
         <vue-button type="default" v-on:click="showModal({'name': 'filter-modal', 'title': 'Filter Table Data'})">Add/View Data Filters</vue-button>
@@ -567,34 +567,206 @@
           var rows = this.$data.inference_rows
           console.log("adding all rows to pdf")
         }
+
         // doc.rect(40, 20, 10, 10); // filled square
         var headers = Object.keys(rows[0])
 
-        pdf.addPage('a4', 'p')
-
-
-        pdf.setPage(1)
-        // pdf.text(headers.join(','), 10, 0)
+        // pdf.addPage('a4', 'p')
         var text_headers = ['DataSetName', 'Class', 'Score', 'URL', 'FormattedDate', 'Project' ]
-        rows.map( (row, idx) => {
-          if (row['Thumbnail'] && row['Thumbnail'].length > 0) {
-            var imageString = 'data:image/png;base64,' + row['Thumbnail']
-            console.log("imageString")
-            console.log(imageString)
-            pdf.addImage(imageString, 'PNG', 15, (40 * (idx + 1)) , 45, 40);
-          }
-          text_headers.map( (h, h_idx) => {
-            pdf.text(`${h} `, 20, 10 * (h_idx + 4))
-            pdf.text(row[h], 20, 10 * (h_idx + 4))
-          })
-          if (idx % 5 == 0) {
-            pdf.addPage('a4', 'p')
-          }
-          // var rowValues = Object.values(row).slice(1)
-          if (idx == (rows.length - 1) ) {
-            pdf.save(filename)
+
+        var inf_per_page = 5
+        var num_pages = rows.length / inf_per_page
+            // [...Array(num_pages - 1 ).keys()]
+
+        // pdf.addPage('a4', 'p')
+        // var p =
+        // pdf.setPage(1)
+        var createPages = new Promise( (resolve, reject) => {
+          for (var i = 0 ; i < 12 ; i++ ) {
+            pdf.addPage()
+            if (i == 11) {
+              resolve()
+            }
           }
         })
+
+        pdf.setPage(1)
+        pdf.setFont("Arial");
+        // pdf.setFontType("bold");
+        pdf.setFontSize(30);
+        pdf.text('Inference Results', 70, 20)
+        pdf.setFontSize(9);
+        var addInference = function(row, idx) {
+            console.log(`------processing row ${idx}----------------------`)
+            return new Promise( (resolve, reject) => {
+              // console.log(`pdf ${JSON.stringify(pdf)}`)
+              if ( (idx % inf_per_page == 0)) {
+                console.log(`<---- turning to page ${idx / inf_per_page} ---->`)
+                var currentPage = (idx / inf_per_page) + 1
+                pdf.setPage((idx / inf_per_page) + 1)
+              }
+
+              // var currentPage = (idx / inf_per_page) + 1
+
+              console.log(`adding inf on page ${currentPage}`)
+              console.log(`row ${row}`)
+              if (Object.keys(row).includes('Thumbnail') && (row['Thumbnail'].length > 0)) {
+                var imageString = 'data:image/png;base64,' + row['Thumbnail'] // TODO, detect image typw
+                // pdf.text(`image ${idx}`, 15, (40 * (idx + 1)))
+                console.log(`image y ${(40 * (idx + 1 - currentPage))}`)
+                pdf.addImage(imageString, 'PNG', 15, (50 * (( idx % inf_per_page ) + 1 )) , 45, 40)
+              } else {
+                console.log("no image, skipping this row")
+                resolve()
+              }
+
+              text_headers.map( (h, h_idx) => {
+                console.log(`adding inf header  ${h} on page ${currentPage}`)
+                // 15, (50 * (( idx % inf_per_page ) + 1 ))
+                // var text_headers = ['DataSetName', 'Class', 'Score', 'URL', 'FormattedDate', 'Project' ]
+                pdf.text(`${h}: ${row[h]}`, 20 + 45, (50 * (( idx % inf_per_page ) + 1) + ((5 * (h_idx + 1))) ))
+
+                // pdf.text(`${h}: ${row[h]}`, 15 + 45, 10 * (idx + h_idx + 4))
+                if (h_idx == text_headers.length - 1 ) {
+                    console.log("added all headers")
+                    // pdf.line(20, 50 * (idx + 1), 60, 20)
+                    // console.log(`pdf ${JSON.stringify(pdf)}`)
+                    if (idx == (rows.length - 1) ) {
+                      pdf.save(filename)
+                      resolve()
+                    } else {
+                      resolve()
+                    }
+                    // console.log("waiting")
+                    // setTimeout(function(){ resolve(); }, 1);
+
+                    // resolve()
+
+                }
+              })
+          })
+        }
+
+        var currentPage = 1
+        createPages.then( () => {
+          rows.reduce( (p, row, idx) => {
+            return p.then(() => {
+              // if ( (idx % inf_per_page == 0)) {
+              //   console.log(`<---- turning to page ${ (idx / inf_per_page) + 1} ---->`)
+              //   currentPage = (idx / inf_per_page) + 1
+              //   pdf.setPage((idx / inf_per_page) + 1)
+              // }
+              return addInference(row, idx);
+            });
+          }, Promise.resolve());
+          // rows.fill( addInference ).reduce( (p, f, i) => p.then(f), Promise.resolve() )
+
+          // var promises = rows.map( (row, idx) => { addInference(row, idx)} )
+          // console.log(promises[0])
+          // console.log(promises[1])
+          // promises.reduce( (p, f, i) => p.then(f), Promise.resolve() )
+          /*
+          https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Using_promises
+
+          Sequential composition is possible using some clever JavaScript:
+
+          [func1, func2, func3].reduce((p, f) => p.then(f), Promise.resolve())
+          .then(result3 => { use result3 });
+          Basically, we reduce an array of asynchronous functions down to a promise chain equivalent to: Promise.resolve().then(func1).then(func2).then(func3);
+          */
+
+          // Array.from({length:rows.length}, ()=> (addInference))
+
+          // Array(rows.length).fill(addInference).reduce((p, f, i) => p.then(f), Promise.resolve())
+          /*
+          rows.reduce((promise, row, idx) => {
+            console.log(`promise row ${row['Class']}`)
+            console.log(`promise row ${idx}`)
+            // resolve(item);
+            return promise.then(() => {
+              // return new Promise((resolve, reject)=> {
+                return addInference(row, idx) //.then( () => {} )
+              // })
+            })
+          }, Promise.resolve())
+          */
+        })
+
+
+        // [func1, func2, func3].reduce((p, f) => p.then(f), Promise.resolve())
+
+
+        /*
+        var iterateRows(rows) {
+          return rows.reduce((p, row) => {
+            return promise.then( () => {
+              return
+            })
+          })
+        }
+        */
+
+
+        /*
+        var currentPage = 1
+        for (var i = 0 ; i < 5 ; i++ ) {
+          pdf.addPage()
+          if (i == 4) {
+            rows.map( (row, idx) => {
+              console.log(`row ${idx}`)
+
+              // add image
+              if (row['Thumbnail'] && row['Thumbnail'].length > 0) {
+                var imageString = 'data:image/png;base64,' + row['Thumbnail'] // TODO, detect image type
+                // console.log(`adding inf on page ${currentPage}`)
+                pdf.addImage(imageString, 'PNG', 15, (40 * (idx + 1)) , 45, 40)
+                pdf.text('DataSetName: ', 15, (50 * (idx + 1)))
+                // pdf.text( row['DataSetName'], 150, 10 * (idx + 4))
+
+                text_headers.map( (h, h_idx) => {
+                  console.log(`adding inf header  ${h} on page ${currentPage}`)
+                  pdf.text(`${h} - ${row[h]}`, 15, 10 * (idx + h_idx + 4))
+                  if (h_idx == text_headers.length - 1 ) {
+                      // pdf.line(20, 50 * (idx + 1), 60, 20)
+                  }
+                })
+              }
+              if ( (idx % inf_per_page == 0)) {
+                console.log(`turning to page ${idx / inf_per_page}`)
+                currentPage = idx / inf_per_page
+                pdf.setPage(idx / inf_per_page)
+              }
+
+              if (idx == (rows.length - 1) ) {
+                pdf.save(filename)
+              }
+            } )
+          }
+        }*/
+
+        // Promise.all(Array(5).fill(createPagePromise)).then ( () => {
+        //   console.log("created 5 pages")
+        // Array(5).fill(pdf.addPage())
+        // .reduce((p, f) => p.then(f), Promise.resolve()).then( () => {
+
+          // })
+        // } )
+        // var processRow = new Promise( (resolve, reject) => {
+        //   var imageString = 'data:image/png;base64,' + row['Thumbnail'] // TODO, detect image type
+        //   console.log("imageString")
+        //   console.log(imageString)
+        //   pdf.addImage(imageString, 'PNG', 15, (40 * (idx + 1)) , 45, 40)
+        //
+        // } )
+
+
+
+
+
+
+
+        // pdf.text(headers.join(','), 10, 0)
+
       },
       downloadImages() {
         var zip = new this.$JSZip();

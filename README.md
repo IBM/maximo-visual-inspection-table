@@ -10,7 +10,7 @@ This code pattern is targeted towards users who have uploaded images to an IBM V
 <!-- The intended audience for this Code Pattern -->
 
 
-<img src="https://i.imgur.com/TnAHWkQ.png">
+<img src="https://s3.us-east.cloud-object-storage.appdomain.cloud/staging-sombra/patterns/generate-dashboards-of-insights-from-inferred-results/images/flow.png">
 
 
 #  Components
@@ -87,7 +87,6 @@ Click image above to be guided through a step by step video tutorial.
 - Enter "Name" and "Location" and then click "Next"
 
 - Enter the following IBM Visual Insights credentials in the "Global Settings" section. These should be included in your Welcome Letter received when you activated the Visual Insights service
-
   - URL
   - Username
   - Password
@@ -96,7 +95,9 @@ Click image above to be guided through a step by step video tutorial.
 
 - Next, create a new project. Press the `+` icon in the upper right.
 
-- Provide a inspection name, and then select "Create New Project".
+- Provide a inspection name
+
+- Select "Create New Project".
 
 - Select your targeted model and dataset.
 
