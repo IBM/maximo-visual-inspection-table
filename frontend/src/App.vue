@@ -51,7 +51,7 @@
         </div>
         <div>
           <vue-button type="default" v-on:click="hideModal({'name': 'upload-modal'})">Cancel</vue-button>
-          <vue-button type="default" v-on:click="getClasses() ; hideModal({'name': 'upload-modal'})">Upload CSV</vue-button>
+          <vue-button type="default" v-on:click="getClasses() ; formatCircle() ; hideModal({'name': 'upload-modal'})">Upload CSV</vue-button>
           <!-- <vue-button type="default" v-on:click="submitInference() ; hideModal({'name': 'upload-modal'})">Upload</vue-button> -->
         </div>
       </modal>
@@ -61,51 +61,53 @@
       <h2 align="center"> Add Data Filter </h2>
       <!-- headers
       {{inference_headers}} -->
-      <vue-form
-        id="filter-form"
-        :model="form">
+      <template v-if="inference_headers && (inference_headers.length > 0)">
+        <vue-form
+          id="filter-form"
+          :model="form">
 
-        <vue-form-item >
-          <!-- <v-select style="width:400px;margin-left:100px" id="filter_header" v-model="filter_header" placeholder="Column" :options=inference_headers></v-select> -->
-          <template v-if="inference_headers && (inference_headers.length > 0)">
-          <select v-model="filter_header">
-            <option selected="selected">
-              {{ inference_headers[0] }}
-            </option>
-            <option v-for="header in inference_headers.slice(1)">
-              {{ header }}
-            </option>
-          </select>
-          </template>
-          <template v-else>
-            <p style="color:red">No column titles found, please import CSV File</p>
-          </template>
+          <vue-form-item >
+            <!-- <v-select style="width:400px;margin-left:100px" id="filter_header" v-model="filter_header" placeholder="Column" :options=inference_headers></v-select> -->
 
-        </vue-form-item>
+            <select v-model="filter_header">
+              <option value="" disabled selected>Select Column</option>
+              <option selected="selected">
+                {{ inference_headers[0] }}
+              </option>
+              <option v-for="header in inference_headers.slice(1)">
+                {{ header }}
+              </option>
+            </select>
 
-        <vue-form-item >
-          <!-- <v-select style="width:400px;margin-left:100px" id="compare_type" v-model="compare_type" placeholder="Compare type" options="['less', 'greater', 'equal', 'contains']"></v-select> -->
-          <select v-model="filter_compare_type">
-            <option value="contains" selected="selected">Contains</option>
-            <option value="less">Less</option>
-            <option value="greater">Greater</option>
-            <option value="equal">Equal</option>
-          </select>
-        </vue-form-item>
-        <vue-form-item style="width:500px;" align=center>
-          <vue-input
-            placeholder="Value"
-            v-model="filter_value">
-          </vue-input>
-        </vue-form-item>
+          </vue-form-item>
 
-        <vue-form-item style="margin-left:100px">
-          <vue-button type="default" v-on:click="hideModal({'name': 'filter-modal'})">Cancel</vue-button>
-          <vue-button type="success" v-on:click="addFilter() ; hideModal({'name': 'filter-modal'}) ">Add</vue-button>
-        </vue-form-item>
+          <vue-form-item >
+            <!-- <v-select style="width:400px;margin-left:100px" id="compare_type" v-model="compare_type" placeholder="Compare type" options="['less', 'greater', 'equal', 'contains']"></v-select> -->
+            <select v-model="filter_compare_type">
+              <option value="" disabled selected>Select Comparison Type</option>
+              <option value="contains" selected="selected">Contains</option>
+              <option value="less">Less</option>
+              <option value="greater">Greater</option>
+              <option value="equal">Equal</option>
+            </select>
+          </vue-form-item>
+          <vue-form-item style="width:500px;" align=center>
+            <vue-input
+              placeholder="Value"
+              v-model="filter_value">
+            </vue-input>
+          </vue-form-item>
 
-
+          <vue-form-item style="margin-left:100px">
+            <vue-button type="default" v-on:click="hideModal({'name': 'filter-modal'})">Cancel</vue-button>
+            <vue-button type="success" v-on:click="addFilter() ; hideModal({'name': 'filter-modal'}) ">Add</vue-button>
+          </vue-form-item>
         </vue-form>
+
+        </template>
+        <template v-else>
+          <p style="color:red">No column titles found, please import CSV File</p>
+        </template>
 
         <h2 align="center"> Active Filters </h2>
         <template v-if="Object.keys(activeFilters).length > 0">
@@ -116,11 +118,11 @@
                 <div class="content"> </div>
                   <!-- <i class="window close outline icon" v-on:click="removeFilter(value)"></i>  -->
                   <div class="center floated description"> {{activeFilters[key].join(', ')}}
-                  <div class="right floated content" v-on:click="removeFilter(value)">
-                    <i class="window close outline icon"></i>
-                    <div class="ui button">Remove</div>
+                    <!-- <div class="right floated content" v-on:click="removeFilter(value)">
+                      <i class="window close outline icon"></i>
+                      <div class="ui button">Remove</div>
+                    </div> -->
                   </div>
-                </div>
 
               </div>
             </template>
@@ -137,19 +139,23 @@
       <!-- <div class="ui container"> -->
       <div class="ui search" style="margin-top:30px;margin-bottom:30px;">
         <div class="ui icon input">
-          <input v-model="search_query" v-on:keyup.enter="search" class="prompt" type="text" placeholder="Search Inferences">
+          <input v-model="search_query" @input="search" v-on:keyup.enter="search" class="prompt" type="text" placeholder="Search Inferences">
           <i v-on:click="search" class="search icon"></i>
         </div>
         <div class="results"></div>
-      </div>
 
-      <template v-if="inference_rows_filtered.length > 0">
-        Showing {{inference_rows_filtered.length}} of {{inference_rows.length}} rows
-      </template>
-      <template v-else>
-        Showing all {{inference_rows.length}} rows
-      </template>
-      <table class="ui celled sortable table selectable compact scrolling" style="height:500px;overflow-x: scroll;">
+      </div>
+      <div>
+
+        <template v-if="inference_rows_filtered.length > 0">
+          Showing {{inference_rows_filtered.length}} of {{inference_rows.length}} rows
+        </template>
+        <template v-else>
+          Showing all {{inference_rows.length}} rows
+        </template>
+
+      </div>
+      <table class="ui celled sortable table selectable compact scrolling" style="height:700px;width:50%; overflow-x: scroll;">
         <thead class="sticky">
             <tr>
             <template v-for="header in inference_headers" >
@@ -161,18 +167,20 @@
           <template v-if="inference_rows_filtered.length > 0">
             <template v-for="row in inference_rows_filtered" >
               <tr>
+                <!-- <template v-for="(value, label) in row" > -->
+                <!-- <template v-for="header in inference_headers"> -->
                 <template v-for="(value, label) in row" >
-                  <!-- <td class="collapsing" :data-label=label>{{value}}</td> -->
-                  <template v-if="label == 'Thumbnail'">
-                    <td :data-label=label><img :src="'data:image/png;base64,' + value"/></img></td>
+                  <template v-if="inference_headers.includes(label)">
+                      <template v-if="label == 'Thumbnail'">
+                        <td :data-label=label><img :src="'data:image/png;base64,' + value"/></img></td>
+                      </template>
+                      <template v-else-if="label == 'URL'">
+                        <td :data-label=label></td>
+                      </template>
+                      <template v-else>
+                        <td :data-label=label>{{value}} </td>
+                      </template>
                   </template>
-                  <template v-else-if="label == 'URL'">
-                    <td :data-label=label></td>
-                  </template>
-                  <template v-else>
-                    <td :data-label=label>{{value}}</td>
-                  </template>
-
                 </template>
               </tr>
             </template>
@@ -181,20 +189,33 @@
 
             <template v-for="row in inference_rows" >
               <tr>
-                <template v-for="(value, label) in row" >
-                  <!-- <td class="collapsing" :data-label=label>{{value}}</td> -->
-                  <template v-if="label == 'Thumbnail'">
-                    <td :data-label=label><img :src="'data:image/png;base64,' + value"/></img></td>
-                  </template>
-                  <template v-else-if="label == 'URL'">
-                    <td :data-label=label></td>
-                  </template>
 
+                <template v-for="header in inference_headers" >
+                  <template v-if="header == 'Thumbnail'">
+                    <td :data-label=header><img :src="'data:image/png;base64,' + row[header]"/></img></td>
+                  </template>
+                  <template v-else-if="header == 'URL'">
+                    <td :data-label=header></td>
+                  </template>
                   <template v-else>
-                    <td :data-label=label>{{value}}</td>
+                    <td :data-label=header> {{row[header]}} </td>
                   </template>
-
                 </template>
+
+                <!-- <template v-for="(value, label) in row" >
+                  <template v-if="inference_headers.includes(label)">
+                    <template v-if="label == 'Thumbnail'">
+                      <td :data-label=label><img :src="'data:image/png;base64,' + value"/></img></td>
+                    </template>
+                    <template v-else-if="label == 'URL'">
+                      <td :data-label=label></td>
+                    </template>
+
+                    <template v-else>
+                      <td :data-label=label>{{value}}    {{label}}</td>
+                    </template>
+                  </template>
+                </template> -->
               </tr>
             </template>
           </template>
@@ -202,24 +223,30 @@
       </table>
 
 
-      <div class="ui card">
+
+      <div class="ui card" style="margin-left: auto;margin-right: auto; width:40%">
+        <h2 class="header">Inference Stats</h2>
         <div class="content">
-          <p class="header">Inference Stats</p>
+          <!-- <p class="header">Inference Stats</p> -->
+
         <div class="description">
           <p> {{inference_rows.length}} images uploaded </p>
-
-          <template v-if="Object.keys(inference_results).length > 0">
-              Images per Class
-              <div class="extra content">
-
-              <template v-for="(value, key) in inference_results">
-                <p> {{key}} : {{value.length}} </p>
-              </template>
-              </div>
-          </template>
         </div>
       </div>
+        <div class="content">
+          <h3 class="header">Images per Class</h3>
+          <template v-if="Object.keys(inference_results).length > 0">
+              <!-- <div class="content"> -->
 
+                <!-- <template v-for="(value, key) in inference_results">
+                  <p> {{key}} : {{value.length}} </p>
+                </template> -->
+
+                <Plotly id="detailedPieGraph" :data=circleGraphData :display-mode-bar="false"></Plotly>
+
+              <!-- </div> -->
+          </template>
+        </div>
       </div>
 
       <!-- <template for="">
@@ -255,7 +282,7 @@
       <md-card style="width:50%">
         <!-- <md-card-content> -->
         <!-- {{circleGraphData}} -->
-        <Plotly id="detailedPieGraph" :data=circleGraphData :display-mode-bar="false"></Plotly>
+        <Plotly id="detailedPieGraph" :data=circleGraphData :display-mode-bar="true"></Plotly>
         <!-- </md-card-content> -->
       </md-card>
 
@@ -363,7 +390,6 @@
         inference_data: {},
         fields: [],
         inference_rows: [],
-        inference_headers: [],
         query: '',
         tableData: [],
         inference_rows_filtered: [],
@@ -411,6 +437,16 @@
         filter_compare_type: "",
         search_query: "",
         inference_results: {},
+        inference_headers: [
+          "Thumbnail",
+          "DataSetName",
+          'Class',
+          'Score',
+          'Type',
+          'FormattedDate',
+          // 'InspectionDevice',
+          'Location'
+        ],
 
         lineGraphLayout: {
           title: 'Objects Time Series',
@@ -464,11 +500,11 @@
         // filter[ts] = [filter_header, filter_compare_type, filter_value]
         this.$data.activeFilters[ts] = [filter_header, filter_compare_type, filter_value] //.push( filter )
         if (filter_compare_type == 'less') {
-          var filtered_rows = this.$data.inference_rows.filter(row => row[filter_header] < filter_value)
+          var filtered_rows = this.$data.inference_rows.filter(row => parseFloat(row[filter_header]) < parseFloat(filter_value))
           this.$data.inference_rows_filtered = filtered_rows
           console.log(`reduced to ${filtered_rows.length}`)
         } else if (filter_compare_type == 'greater') {
-          var filtered_rows = this.$data.inference_rows.filter(row => row[filter_header] > filter_value)
+          var filtered_rows = this.$data.inference_rows.filter(row => parseFloat(row[filter_header]) > parseFloat(filter_value))
           this.$data.inference_rows_filtered = filtered_rows
           console.log(`reduced to ${filtered_rows.length}`)
         } else if (filter_compare_type == 'equal') {
@@ -482,8 +518,74 @@
           // console.log("filtered to " this.$data.inference_rows_filtered)
         }
       },
+      filterRows(){
+        var filters = this.$data.activeFilters
+        var filterFuncs = []
+        var filtered_rows_total = this.$data.inference_rows
+        Object.keys(filters).map( (ts, idx) => {
+          // filters[ts]
+          var filter_header = filters[ts][0]
+          var filter_compare_type = filters[ts][1]
+          var filter_value = filters[ts][2]
+
+          var filter_less = (a, b) => a < b
+          var filter_more = (a, b) => a > b
+          var filter_equal = (a, b) => a == b
+          var filter_contains = (a, b) => a.includes(b)
+
+          // const filteredData = filters.reduce((d, f) => d.filter(f) , data)
+          // if (filter_compare_type == 'less') {
+          //   filterFuncs.append( filter_less() )
+          // }
+
+          if (filter_compare_type == 'less') {
+            filtered_rows_total = filtered_rows_total.filter(row => parseFloat(row[filter_header]) < parseFloat(filter_value))
+            if (idx == (filters.length - 1)) {
+              this.$data.inference_rows_filtered = filtered_rows_total
+            }
+            // this.$data.inference_rows_filtered = filtered_rows
+            // console.log(`reduced to ${filtered_rows.length}`)
+          } else if (filter_compare_type == 'greater') {
+            filtered_rows_total = filtered_rows_total.filter(row => parseFloat(row[filter_header]) > parseFloat(filter_value))
+            if (idx == (filters.length - 1)) {
+              this.$data.inference_rows_filtered = filtered_rows_total
+            }
+            // this.$data.inference_rows_filtered = filtered_rows
+            // console.log(`reduced to ${filtered_rows.length}`)
+          } else if (filter_compare_type == 'equal') {
+            filtered_rows_total = filtered_rows_total.filter(row => row[filter_header] == filter_value)
+            if (idx == (filters.length - 1)) {
+              this.$data.inference_rows_filtered = filtered_rows_total
+            }
+            // this.$data.inference_rows_filtered = filtered_rows
+            // console.log(`reduced to ${filtered_rows.length}`)
+          } else if (filter_compare_type == 'contains') {
+            filtered_rows_total = filtered_rows_total.filter(row => row[filter_header].includes(filter_value))
+            if (idx == (filters.length - 1)) {
+              this.$data.inference_rows_filtered = filtered_rows_total
+            }
+            // this.$data.inference_rows_filtered = filtered_rows
+            // console.log(`reduced to ${filtered_rows.length}`)
+            // console.log("filtered to " this.$data.inference_rows_filtered)
+          }
+        })
+      },
       removeFilter(f){
         console.log(f)
+        // this.$data.activeFilters[ts]
+        // var matchingFilter = this.$data.activeFilters.filter(filter => { (filter[0] == f[0]) && (filter[1] == f[1]) && (filter[2] == f[2]) } )
+        var aFilters = this.$data.activeFilters
+        Object.keys(aFilters).map( (filter) => {
+          if ((aFilters[filter][0] == f[0]) && (aFilters[filter][1] == f[1]) && (aFilters[filter][2] == f[2])) {
+            console.log(`found matching filter, removing {filter}`)
+            // this.$data.activeFilters.pop(aFilters)
+            delete this.$data.activeFilters[filter]
+            console.log(this.$data.activeFilters)
+            var filtered_rows = this.$data.inference_rows.filter(row => row[filter_header].includes(filter_value))
+            this.$data.inference_rows_filtered = filtered_rows
+            // this.$data.inference_rows_filtered = filtered_rows
+          }
+        } )
       },
       getClasses() {
         var delimiter = '__'
@@ -511,8 +613,9 @@
       search() {
         var query = this.$data.search_query //this.$data.query
         console.log("performing search for: " + query)
-        this.$data.inference_rows_filtered = this.$data.inference_rows.filter(row => JSON.stringify(row).includes(query))
-
+        // this.$data.inference_rows_filtered = this.$data.inference_rows.filter(row => JSON.stringify(row.map( s =>  ([s.DataSetName, s.Class, s.Score, s.Type, s.FormattedDate, s.Location]) )  ).toLowerCase().includes(query.toLowerCase()))
+        this.$data.inference_rows_filtered = this.$data.inference_rows.filter(row => JSON.stringify(([row.DataSetName, row.Class, row.Score, row.Type, row.FormattedDate, row.Location])  ).toLowerCase().includes(query.toLowerCase()))
+        this.formatCircle()
         // TODO, allow multi search, split by query and
         // console.log("this.$data.inferenceDetails")
         // console.log(this.$data.inferenceDetails)
@@ -524,10 +627,10 @@
         // TODO, add check to determine if all numbers
         // s.match(/^[0-9]+$/)
         if (sortAscending) {
-          this.$data.inference_rows_filtered = this.$data.inference_rows.sort((a, b) => (a[column].toLowerCase() >= b[column].toLowerCase()) ? 1 : -1)
+          this.$data.inference_rows_filtered = this.$data.inference_rows_filtered.sort((a, b) => (a[column].toLowerCase() >= b[column].toLowerCase()) ? 1 : -1)
           this.$data.sortAscending = (! this.$data.sortAscending)
         } else {
-          this.$data.inference_rows_filtered = this.$data.inference_rows.sort((a, b) => (a[column].toLowerCase() < b[column].toLowerCase()) ? 1 : -1)
+          this.$data.inference_rows_filtered = this.$data.inference_rows_filtered.sort((a, b) => (a[column].toLowerCase() < b[column].toLowerCase()) ? 1 : -1)
           this.$data.sortAscending = (! this.$data.sortAscending)
         }
 
@@ -572,7 +675,7 @@
         var headers = Object.keys(rows[0])
 
         // pdf.addPage('a4', 'p')
-        var text_headers = ['DataSetName', 'Class', 'Score', 'URL', 'FormattedDate', 'Project' ]
+        var text_headers = this.$data.inference_headers //['DataSetName', 'Class', 'Score', 'URL', 'FormattedDate', 'Project' ]
 
         var inf_per_page = 5
         var num_pages = rows.length / inf_per_page
@@ -833,7 +936,8 @@
                 // this.$data.inference_headers = []
                 var rows = text.split(/\r\n|\n/)
                 var h = rows[0].split(',');
-                this.$data.inference_headers = h
+                // this.$data.inference_headers = h
+
                 // var headers = [h.map( (header) => { return {"text": header, "value": header } } )]
                 var row_data = {}
                 var h_obj = h.map( (h) => { row_data[h] = "" } )
@@ -1153,28 +1257,62 @@
         // this.$data.lineGraph =
         // this.$data.circleGraph =
       },
-      formatCircle(inferenceId) {
-        console.log(this.$data.inferenceDetails)
-        console.log("generating line graph for " + inferenceId)
-        var detections = this.$data.inferenceDetails[inferenceId]
-        var objects = Object.keys(detections)
+      formatCircle() {
+        // console.log(this.$data.inferenceDetails)
+        if (this.$data.inference_rows_filtered.length > 0) {
+          var rows = this.$data.inference_rows_filtered
+        } else {
+          var rows = this.$data.inference_rows
+        }
+
+        console.log("generating line graph")
+        // var detections = this.$data.inferenceDetails[inferenceId]
+        // var objects = Object.keys(detections)
         var d = {
           values: [],
           labels: [],
           type: "pie",
-          textinfo: "label+percent",
+          textinfo: "label+value",
           textposition: "outside",
-          automargin: true
+          // automargin: true,
+          showlegend: true
         }
-        objects.map((o) => {
-          d['values'].push(detections[o].reduce((a, b) => a + b, 0))
-          d['labels'].push(o)
-          console.log(d)
+
+        var count = {}
+        rows.map( (r, idx) => {
+
+          if (Object.keys(count).includes(r['Class'])) {
+            count[r['Class']] += 1
+          } else {
+            count[r['Class']] = 1
+          }
+
+          if (idx == (rows.length - 1) ) {
+            console.log("finished looping rows, format pie data")
+            d['labels'] = Object.keys(count)
+            Object.keys(count).map((l, l_idx) => {
+              d['values'].push( count[l] )
+              console.log("d")
+              console.log(d)
+              if (l_idx  == (Object.keys(count).length - 1 ) ) {
+                this.$data.circleGraphData = [d]
+                console.log("this.$data.circleGraphData")
+                console.log(this.$data.circleGraphData)
+              }
+            })
+            // d['values'] =
+            // d['values']
+            // d['labels'].push(r['Class'])
+
+          }
         })
 
-        this.$data.circleGraphData = [d]
-        console.log("this.$data.circleGraphData")
-        console.log(this.$data.circleGraphData)
+        // objects.map((o) => {
+        //   d['values'].push(detections[o].reduce((a, b) => a + b, 0))
+        //   d['labels'].push(o)
+        //   console.log(d)
+        // })
+
       },
       showInvokeModal(config) {
         console.log("opening modal")

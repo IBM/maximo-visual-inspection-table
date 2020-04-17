@@ -70,7 +70,7 @@ Vue.use(VModal)
 Vue.use(Router)
 // Vue.use(card)
 // Vue.use(VueUploadComponent)
-Vue.use(Plotly)
+// Vue.use(Plotly)
 Vue.component('Plotly', Plotly)
 Vue.use(SuiVue);
 
