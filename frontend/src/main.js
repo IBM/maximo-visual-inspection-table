@@ -40,10 +40,19 @@ import jsPDF from 'jspdf'
 import DetailedInferenceView from './components/DetailedInferenceView'
 import Drag from './components/Drag'
 import Router from 'vue-router'
+
 import SuiVue from 'semantic-ui-vue';
 import SemanticUI from 'semantic-ui-vue';
 import 'semantic-ui-css/semantic.min.css';
 // import 'vue-select/dist/vue-select.css';
+
+/*
+TODO, readd this for carbon
+import CarbonComponentsVue from "@carbon/vue";
+import { CvModal } from '../../packages/core/src/';
+Vue.use(CarbonComponentsVue);
+*/
+
 
 Vue.use(Drag)
 Vue.component('drag', Drag)

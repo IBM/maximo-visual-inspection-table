@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "body-parser": "^1.19.0",
+    "carbon-components": "^10.12.0",
     "chart.js": "^2.9.3",
     "jquery-tablesort": "0.0.11",
     "jspdf": "^1.5.3",
