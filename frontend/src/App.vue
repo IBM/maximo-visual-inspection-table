@@ -60,7 +60,7 @@
     </div>
 
     <!-- TODO draw rect -->
-    <vue-button type="default" v-on:click="showModal({'name': 'view-image'})">Image</vue-button>
+    <!-- <vue-button type="default" v-on:click="showModal({'name': 'view-image'})">Image</vue-button> -->
     <div style="margin: 0; position: absolute; top: 50%; left: 50%;" >
       <modal name="view-image" height="auto" >
         <h2 align="center"> Image </h2>
@@ -316,17 +316,34 @@
 
                           <template v-else-if="label == 'Heatmap/Boxes'">
                             <td :data-label=label>
-                              <li v-for="box in value.split('|')">
-                                {{ box }}
-                              </li>
+                              <div class="ui list">
+                                <li v-for="box in value.split('|')">
+                                  <div class="item">
+                                  {{ box }}
+                                  </div>
+                                </li>
+                              </div>
                             </td>
                           </template>
 
                           <template v-else-if="label == 'Class'">
                             <td :data-label=label>
-                                <li v-for="cls in value.split('|')">
+                                <!-- <li v-for="cls in value.split('|')">
                                   {{ cls }}
-                                </li>
+                                </li> -->
+
+                                <div class="ui list">
+                                  <!-- <li v-for="score in value.split('|')"> -->
+                                  <template v-for="cls in value.split('|')">
+                                    <div class="item">
+                                      {{ cls  }}
+                                    </div>
+                                  </template>
+                                    <!-- {{ parseInt(score).toFixed(2) }} -->
+                                  <!-- </li> -->
+                                </div>
+
+
                             </td>
                           </template>
 
@@ -334,9 +351,16 @@
                           <template v-else-if="label == 'Score'">
                             <td :data-label=label>
                               <!-- {{value.split('|')}} -->
-                              <li v-for="score in value.split('|')">
-                                {{ score }}
-                              </li>
+                              <div class="ui list">
+                                <!-- <li v-for="score in value.split('|')"> -->
+                                <template v-for="score in value.split('|')">
+                                  <div class="item">
+                                    {{ parseFloat(score).toFixed(2)  }}
+                                  </div>
+                                </template>
+                                  <!-- {{ parseInt(score).toFixed(2) }} -->
+                                <!-- </li> -->
+                              </div>
                             </td>
                           </template>
 
@@ -651,17 +675,18 @@
                 console.log("drawing boxes")
                 // console.log(inference.value['Class'])
                 // inference.value['classified'].map( (o, idx) => {
+                console.log(inference.value['Class'])
                 inference.value['Class'].split('|').map( (b, idx) => {
                   // context.rect(x,y,width,height)
                   // ctx.rect(20, 20, 150, 100);
                   // var ratio = 0.5 // 0.7220216606498195
                   // var y_offset = -150
-                  var coords = inference.value['Heatmap'].split('|')[idx].split('-')
+                  var coords = inference.value['Heatmap/Boxes'].split('|')[idx].split('-')
                   var o = {
-                    xmin: coords[0],
-                    xmax: coords[1],
-                    ymin: coords[2],
-                    ymax: coords[3],
+                    xmin: coords[1],
+                    xmax: coords[0],
+                    ymin: coords[3],
+                    ymax: coords[2],
                   }
                   var tl_x = o['xmin'] * hRatio
                   var tl_y = (o['ymin'] * vRatio)
@@ -675,8 +700,10 @@
                   console.log(`xmin ${o['xmin']}, ymax ${o['ymax']}, hRatio ${hRatio} vRatio ${vRatio}`)
                   console.log(`w ${w}, h ${h}, tl_x ${tl_x}, tl_y ${tl_y} ` )
                   ctx.beginPath()
-                  ctx.font = "30px Arial";
-                  ctx.fillText(o['label'], o['xmin'] + 20, o['ymin'] + 20)
+                  ctx.font = "40px Arial";
+                  console.log(`writing class: ${b} ${o['xmin']} ${o['ymin']}`)
+                  // ctx.fillText(b, o['xmin'] + 20, o['ymin'] + 20)
+                  ctx.fillText(b, tl_x , tl_y )
                   ctx.rect( tl_x, tl_y, w, h )
                   // ctx.rect( tl_x + centerShift_x, tl_y + centerShift_y, w, h )
                   // ctx.rect( tl_x + centerShift_x, tl_y + centerShift_y + y_offset, w, h )
