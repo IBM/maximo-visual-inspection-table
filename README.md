@@ -1,10 +1,10 @@
-# Generate and visualize video analytics using IBM Visual Insights
+# Generate and visualize video analytics using IBM Maximo Visual Inspection
 
-In this Code Pattern we will demonstrate a dashboard that'll enable users to extract image analysis data from an IBM Visual Insights instance. This extracted data can be filtered and viewed within an interactive table. The displayed data can also be exported as a PDF report.
+In this Code Pattern we will demonstrate a dashboard that'll enable users to extract image analysis data from an IBM Maximo Visual Inspection instance. This extracted data can be filtered and viewed within an interactive table. The displayed data can also be exported as a PDF report.
 
-When the reader has completed this Code Pattern, they will understand how to extract information from an IBM Visual Insights instance as a CSV file, and how to visualize and filter the data within a web browser.
+When the reader has completed this Code Pattern, they will understand how to extract information from an IBM Maximo Visual Inspection instance as a CSV file, and how to visualize and filter the data within a web browser.
 
-This code pattern is targeted towards users who have uploaded images to an IBM Visual Insights instance via the Visual Inspector iOS application.
+This code pattern is targeted towards users who have uploaded images to an IBM Maximo Visual Inspection instance via the Visual Inspector iOS application.
 
 
 <!-- The intended audience for this Code Pattern -->
@@ -15,9 +15,9 @@ This code pattern is targeted towards users who have uploaded images to an IBM V
 
 #  Components
 
-* [IBM Visual Insights](https://www.ibm.com/us-en/marketplace/ibm-powerai-vision). This is an image analysis platform that allows you to build and manage computer vision models, upload and annotate images, and deploy apis to analyze images and videos.
+* [IBM Maximo Visual Inspection](https://www.ibm.com/us-en/marketplace/ibm-powerai-vision). This is an image analysis platform that allows you to build and manage computer vision models, upload and annotate images, and deploy apis to analyze images and videos.
 
-Sign up for a trial account of IBM Visual Insights [here](https://developer.ibm.com/linuxonpower/deep-learning-powerai/try-powerai/). This link includes options to provision a IBM Visual Insights instance either locally on in the cloud.
+Sign up for a trial account of IBM Maximo Visual Inspection [here](https://developer.ibm.com/linuxonpower/deep-learning-powerai/try-powerai/). This link includes options to provision a IBM Maximo Visual Inspection instance either locally on in the cloud.
 
 * [IBM Visual Inspector](https://apps.apple.com/us/app/ibm-visual-inspector/id1486600972). This is an iOS application that allows users to upload images to Visual Insights from their mobile devices.
 
@@ -25,13 +25,13 @@ Sign up for a trial account of IBM Visual Insights [here](https://developer.ibm.
 # Flow
 
 1. Upload images using IBM Visual Inspector app
-2. Train image inference model in IBM Visual Insights via Visual Inspector app
+2. Train image inference model in IBM Maximo Visual Inspection via Visual Inspector app
 3. Run Python script to extract inference data as CSV
 4. Upload CSV to dashboard and view results
 
 # Prerequisites
 
-* An account on IBM Marketplace that has access to IBM Visual Insights. This service can be provisioned [here](https://developer.ibm.com/linuxonpower/deep-learning-powerai/vision/access-registration-form/)
+* An account on IBM Marketplace that has access to IBM Maximo Visual Inspection. This service can be provisioned [here](https://developer.ibm.com/linuxonpower/deep-learning-powerai/vision/access-registration-form/)
 
 
 * Node.js
@@ -86,7 +86,7 @@ Click image above to be guided through a step by step video tutorial.
 
 - Enter "Name" and "Location" and then click "Next"
 
-- Enter the following IBM Visual Insights credentials in the "Global Settings" section. These should be included in your Welcome Letter received when you activated the Visual Insights service
+- Enter the following IBM Maximo Visual Inspection credentials in the "Global Settings" section. These should be included in your Welcome Letter received when you activated the Visual Insights service
   - URL
   - Username
   - Password
@@ -101,7 +101,7 @@ Click image above to be guided through a step by step video tutorial.
 
 - Select your targeted model and dataset.
 
-- Click the "Capture" button to take and submit photos for analysis by the IBM Visual Insights service.
+- Click the "Capture" button to take and submit photos for analysis by the IBM Maximo Visual Inspection service.
 
 
 
