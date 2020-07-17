@@ -10,9 +10,7 @@ import vSelect from 'vue-select'
 import 'vfc/dist/vfc.css'
 import './dist/json-tree.css'
 
-
 import TreeView from "vue-json-tree-view"
-
 import Vuetable from 'vuetable-2/src/components/Vuetable'
 import VuetablePagination from 'vuetable-2/src/components/VuetablePagination'
 import VuetablePaginationInfo from 'vuetable-2/src/components/VuetablePaginationInfo'
@@ -54,8 +52,33 @@ Vue.use(CarbonComponentsVue);
 */
 
 
+// /*
+// import { CvButton } from '@carbon/vue/src/components/button';
+
+import "carbon-components/css/carbon-components.min.css";
+import CarbonComponentsVue from '@carbon/vue';
+// let carbonLibs = ["CvList", "CvModal", "CvSelect", "CvFileUploader", "CvDataTable", "CvDataTableCell", "CvDataTableRow", "CvAccordion", "CvAccordionItem", "CvButton", "CvTag", "CvStructuredList"]
+Vue.use(CarbonComponentsVue, ["CvModal", "CvSelect", "CvFileUploader", "CvDataTable", "CvDataTableCell", "CvDataTableRow", "CvButton"]);
+
+
+/*
+import {CvModal, CvList, CvSelect, CvFileUploader, CvDataTable, CvAccordion, CvAccordionItem, CvButton} from "@carbon/vue"
+, */
+
+// */
+
+import InfTable from './components/InfTable.vue';
+// Vue.use(InfTable)
+Vue.component('inf-table', InfTable)
+// Vue.component('inf-table', {
+//   props: ['inference_headers', 'inference_rows'],
+//   // template: () => import('./components/InfTable.vue')
+//   template: InfTable
+// })
+
 Vue.use(Drag)
 Vue.component('drag', Drag)
+Vue.use(DataTable)
 
 // Vue.use(MdButton)
 // Vue.use(MdContent)
@@ -73,26 +96,15 @@ Vue.component("vuetable-pagination-info", VuetablePaginationInfo);
 
 Vue.config.productionTip = false
 
-Vue.use(DataTable)
 Vue.use(VFC)
 Vue.use(VModal)
 Vue.use(Router)
-// Vue.use(card)
-// Vue.use(VueUploadComponent)
-// Vue.use(Plotly)
 Vue.component('Plotly', Plotly)
 Vue.use(SuiVue);
 
-// Vue.use(VModal, { componentName: "modal" })
 Object.defineProperty(Vue.prototype, '$JSZip', { value: JSZip });
-
 Object.defineProperty(Vue.prototype, '$jsPDF', { value: jsPDF });
 
-
-// Vue.use(Vuetable)
-// Vue.component('modal', {
-//   template: '#modal-template'
-// })
 new Vue({
   render: h => h(App),
 

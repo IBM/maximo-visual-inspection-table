@@ -1,60 +1,67 @@
-<head>
-
-</head>
-
+/* eslint-disable */
 <template>
 
 
   <div id="app">
-
-    <!-- <CvButton>Button</CvButton> -->
-
     <div id="menu" style="margin-top:40px">
       <div >
-        <!-- <vue-button type="default" v-on:click="goHome">Home</vue-button> -->
-        <vue-button type="default" v-on:click="showModal({'name': 'upload-modal', 'title': 'Upload CSV File'})">Import CSV file</vue-button>
+        <!-- <vue-button type="default" v-on:click="showModal({'name': 'upload-modal', 'title': 'Upload CSV File'})">Import CSV file</vue-button>
         <vue-button type="default" v-on:click="showModal({'name': 'filter-modal', 'title': 'Filter Table Data'})">Add/View Data Filters</vue-button>
-        <!-- <vue-button type="default" v-on:click="showModal({'name': 'login-modal', 'fields': ['URL', 'Username', 'Password'], 'title': 'Login'})">Login</vue-button> -->
-        <vue-button type="default" v-on:click="downloadReports">Export PDF</vue-button>
-      </div>
+        <vue-button type="default" v-on:click="downloadReports">Export PDF</vue-button> -->
 
+        <CvButton style="margin: 0px 10px; text-align: center" type="default" v-on:click="showModal({'name': 'upload-modal', 'title': 'Upload CSV File'})">Import CSV file</CvButton>
+        <CvButton style="margin: 0px 10px; text-align: center" type="default" v-on:click="showModal({'name': 'filter-modal', 'title': 'Filter Table Data'})">Add/View Data Filters</CvButton>
+        <CvButton style="margin: 0px 10px; text-align: center" type="default" v-on:click="printElem">Export PDF</CvButton>
+      </div>
     </div>
 
-    <!-- <div id="drop_zone" ondrop="dropHandler(event);" ondragover="dragOverHandler(event);"> -->
-    <!-- <div>
-      <ul>
-        <li v-for="file in files">{{file.name}} - Error: {{file.error}}, Success: {{file.success}}</li>
-      </ul>
-      <file-upload
-        ref="upload"
-        v-model="files"
-        post-action="/post.method"
-        put-action="/put.method"
-        @input-file="inputFile"
-        @input-filter="inputFilter"
-      >
-      Upload file
-      </file-upload>
-      <button v-show="!$refs.upload || !$refs.upload.active" @click.prevent="$refs.upload.active = true" type="button">Start upload</button>
-      <button v-show="$refs.upload && $refs.upload.active" @click.prevent="$refs.upload.active = false" type="button">Stop upload</button>
+    <!-- <div v-if="inference_rows && (inference_rows.length > 0)">
+      Rendered Table Component
+      <template >
+        <inf-table inference_headers="inference_headers" inference_rows="inference_rows">
+        </inf-table>
+      </template>
+      End Rendered Table Component
     </div> -->
-
-
     <div>
+
+
       <modal name="upload-modal" height="auto">
+
         <h2 align="center"> Upload Files(s) </h2>
         <div id="drop_zone" v-on:drop="dropHandler" v-on:dragover="dragOverHandler">
-          <p align="center">Drag and drop files here</p>
-          <template v-if="filenames.length > 0">
+          <div style="margin: 0 auto;width: 60%">
+            <cv-file-uploader
+              :label="label"
+              :helperText="helperText"
+              :drop-target-label="dropTargetLabel"
+              :accept="accept"
+              :clear-on-reselect="clearOnReselect"
+              :initial-state-uploading="initialStateUploading"
+              :multiple="multiple"
+              :removable="removable"
+              :remove-aria-label="removeAriaLabel"
+              ref="fileUploader">
+            </cv-file-uploader>
+          </div>
+
+          <!-- <template v-if="filenames.length > 0">
             <li v-for="file in filenames">
               {{ file }}
-            </li>
-          </template>
+            </li> -->
+          <!-- </template> -->
         </div>
-        <div>
-          <vue-button type="default" v-on:click="hideModal({'name': 'upload-modal'})">Cancel</vue-button>
-          <vue-button type="default" v-on:click="getClasses() ; formatCircle() ; hideModal({'name': 'upload-modal'})">Upload CSV</vue-button>
-          <!-- <vue-button type="default" v-on:click="submitInference() ; hideModal({'name': 'upload-modal'})">Upload</vue-button> -->
+        <div style="display: table; margin: 0 auto;">
+          <div >
+
+            <!-- <vue-button type="default" v-on:click="hideModal({'name': 'upload-modal'})">Cancel</vue-button>
+            <vue-button type="default" v-on:click="hideModal({'name': 'upload-modal'}) ; getClasses() ; formatCircle() ">Upload CSV</vue-button> -->
+            <CvButton style="margin: 0px 10px; text-align: center" type="default" v-on:click="showModal({'name': 'filter-modal', 'title': 'Filter Table Data'})">Upload CSV</CvButton>
+            <CvButton style="margin: 0px 10px; text-align: center" type="default" v-on:click="printElem">Cancel</CvButton>
+
+            <!-- <vue-button type="default" v-on:click="submitInference() ; hideModal({'name': 'upload-modal'})">Upload</vue-button> -->
+          </div>
+
         </div>
       </modal>
     </div>
@@ -189,273 +196,104 @@
         <template v-if="use_title" slot="title">Title of modal</template>
         <template v-if="use_content" slot="content"><p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, seed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p></template>
       </cv-modal> -->
-      <table class="ui celled sortable table selectable compact scrolling" style="height:700px;width:50%; overflow-x: scroll;">
-        <thead class="sticky">
-            <tr>
-            <template v-for="header in inference_headers" >
-              <th v-on:click=sortTable(header)>{{header}}</th>
+
+      <!-- CARBON DATATABLE -->
+      <!-- <cv-data-table
+        :columns="inference_headers" -->
+
+    <div id="table_container">
+     <div style="margin: auto;width: 80%">
+      <cv-data-table
+        :columns="inference_headers"
+        :pagination="basicPagination"
+        ref="table">
+        <template v-if="inference_rows && (inference_rows.length > 0)" v-for="row in inference_rows" slot="data">
+          <!-- <cv-data-table-row v-for="(row, rowIndex) in [`ibm`, `beta`, `local`, `custom`, `private`]" :key="`${rowIndex}`" :value="`${rowIndex}`"> -->
+          <cv-data-table-row>
+
+            <template v-if="Object.keys(row).includes('Thumbnail')">
+              <cv-data-table-cell ><img v-on:click="showModal({'name': 'view-image', 'inference': row})" :src="'data:image/png;base64,' + row['Thumbnail']"></img></cv-data-table-cell>
             </template>
-            </tr>
-        </thead>
-        <tbody>
-          <template v-if="inference_rows_filtered.length > 0">
-            <template v-for="row in inference_rows_filtered" >
-              <tr>
-                <!-- <template v-for="(value, label) in row" > -->
-                <!-- <template v-for="header in inference_headers"> -->
-                <template v-if="row['AnalysisType'] == 'Object Detection'">
-                    <template v-for="(value, label) in row" >
-                      <template v-if="inference_headers.includes(label)">
-                          <template v-if="label == 'Thumbnail'">
-                            <td :data-label=label><img :src="'data:image/png;base64,' + value"/></img></td>
-                          </template>
 
-                          <template v-if="label == 'ImageURL'">
-                            <td :data-label=label>
-                              <img v-on:click="showModal({'name': 'view-image', 'inference': row})" :src=value></img>
-                            </td>
-                          </template>
+             <template v-if="Object.keys(row).includes('ImageURL')">
+               <cv-data-table-cell>
+                 <img v-on:click="showModal({'name': 'view-image', 'inference': row})" style="width:300px;height:175px" :src="row['ImageURL']"/></img>
+               </cv-data-table-cell>
+             </template>
 
-                          <template v-else-if="label == 'Class'">
-                            <td :data-label=label>
-                              {{value.split('|')}}
-                            </td>
-                          </template>
-
-                          <template v-else-if="label == 'Score'">
-                            <td :data-label=label>
-                              {{value.split('|')}}
-                            </td>
-                          </template>
-
-                          <template v-else-if="(label == 'Heatmap/Boxes')">
-                            <td :data-label=label><img :src=`data:image/png;base64,${value}` ></img></td>
-                          </template>
-
-                          <template v-else>
-                            <td :data-label=label>{{value}} </td>
-                          </template>
-                      </template>
-                    </template>
-                </template>
-                <template v-else-if="row['AnalysisType'] == 'Classification'">
-                    <template v-for="(value, label) in row" >
-                      <template v-if="inference_headers.includes(label)">
-                          <template v-if="label == 'Thumbnail'">
-                            <td :data-label=label><img :src="'data:image/png;base64,' + value"/></img></td>
-                          </template>
-
-                          <template v-if="label == 'ImageURL'">
-                            <td :data-label=label>
-                              <!-- <img v-on:click="showModal({'name': 'view-image', 'inference': row})" :src=value></img> -->
-                              <img v-on:click="showModal({'name': 'view-image', 'src': value})" :src=value></img>
-                            </td>
-                          </template>
-
-                          <template v-if="(label == 'Heatmap/Boxes')">
-                            <td :data-label=label><img :src=`data:image/png;base64,${value}` ></img></td>
-                          </template>
-
-                          <template v-else>
-                            <td :data-label=label>{{value}} </td>
-                          </template>
-                      </template>
-                    </template>
-                </template>
-                <!-- <template v-for="(value, label) in row" >
-                  <template v-if="inference_headers.includes(label)">
-                      <template v-if="label == 'Thumbnail'">
-                        <td :data-label=label><img :src="'data:image/png;base64,' + value"/></img></td>
-                      </template>
-
-                      <template v-if="label == 'ImageURL'">
-                        <td :data-label=label>
-                          <img :src=value></img>
-                        </td>
-                      </template>
-
-                      <template v-if="(label == 'Heatmap') && (value.length > 100)">
-                        <td :data-label=label><img :src=`data:image/png;base64,${value}` ></img></td>
-                      </template>
-
-                      <template v-else>
-                        <td :data-label=label>
-                          ${value}
-                        </td>
-                      </template>
-
-                      <template v-else-if="label == 'URL'">
-                        <td :data-label=label></td>
-                      </template>
-
-                      <template v-else>
-                        <td :data-label=label>{{value}} </td>
-                      </template>
-                  </template>
-                </template> -->
-
-              </tr>
-            </template>
-          </template>
-          <template v-else>
-            <template v-for="row in inference_rows" >
-              <tr>
-                <template v-if="row['AnalysisType'] == 'Object Detection'">
-                    <template v-for="(value, label) in row" >
-                      <template v-if="inference_headers.includes(label)">
-                          <template v-if="label == 'Thumbnail'">
-                            <td :data-label=label><img :src="'data:image/png;base64,' + value"/></img></td>
-                          </template>
-
-                          <template v-else-if="label == 'ImageURL'">
-                            <td :data-label=label>
-                              <!-- setInference() -->
-                              <img v-on:click="inference=row ; showModal({'name': 'view-image', 'src': value})" :src=value></img>
-                            </td>
-                          </template>
-
-                          <template v-else-if="label == 'Heatmap/Boxes'">
-                            <td :data-label=label>
-                              <div class="ui list">
-                                <li v-for="box in value.split('|')">
-                                  <div class="item">
-                                  {{ box }}
-                                  </div>
-                                </li>
-                              </div>
-                            </td>
-                          </template>
-
-                          <template v-else-if="label == 'Class'">
-                            <td :data-label=label>
-                                <!-- <li v-for="cls in value.split('|')">
-                                  {{ cls }}
-                                </li> -->
-
-                                <div class="ui list">
-                                  <!-- <li v-for="score in value.split('|')"> -->
-                                  <template v-for="cls in value.split('|')">
-                                    <div class="item">
-                                      {{ cls  }}
-                                    </div>
-                                  </template>
-                                    <!-- {{ parseInt(score).toFixed(2) }} -->
-                                  <!-- </li> -->
-                                </div>
+             <template v-if="Object.keys(row).includes('InferenceType')">
+               <cv-data-table-cell>
+                 <p>{{row['InferenceType']}}</p>
+               </cv-data-table-cell>
+             </template>
 
 
-                            </td>
-                          </template>
+             <!-- <template v-if="Object.keys(row).includes('DataSetName')">
+               <cv-data-table-cell >{{row['DataSetName']}}</cv-data-table-cell>
+             </template> -->
 
 
-                          <template v-else-if="label == 'Score'">
-                            <td :data-label=label>
-                              <!-- {{value.split('|')}} -->
-                              <div class="ui list">
-                                <!-- <li v-for="score in value.split('|')"> -->
-                                <template v-for="score in value.split('|')">
-                                  <div class="item">
-                                    {{ parseFloat(score).toFixed(2)  }}
-                                  </div>
-                                </template>
-                                  <!-- {{ parseInt(score).toFixed(2) }} -->
-                                <!-- </li> -->
-                              </div>
-                            </td>
-                          </template>
+             <!-- <template v-if="Object.keys(row).includes('Location')">
+               <cv-data-table-cell >{{row['Location']}}</cv-data-table-cell>
+             </template> -->
 
-                          <template v-else>
-                            <td :data-label=label>{{value}} </td>
-                          </template>
+             <template v-if="Object.keys(row).includes('Heatmap/Boxes') && (row['Heatmap/Boxes'].length > 500 )">
+               <cv-data-table-cell ><img :src="'data:image/png;base64,' + row['Heatmap/Boxes']"></img></cv-data-table-cell>
+             </template>
+             <template v-else-if="Object.keys(row).includes('Heatmap/Boxes') && (row['Heatmap/Boxes'].includes('|'))">
+               <cv-data-table-cell >
+                 <li v-for="box in row['Heatmap/Boxes'].split('|')">
+                     {{box}}
+                 </li>
+               </cv-data-table-cell>
+             </template>
+             <template v-else>
+               {{row['Heatmap/Boxes']}}
+             </template>
 
-                      </template>
-                    </template>
-                </template>
-                <template v-else-if="row['AnalysisType'] == 'Classification'">
-                    <template v-for="(value, label) in row" >
-                      <template v-if="inference_headers.includes(label)">
-                          <template v-if="label == 'Thumbnail'">
-                            <td :data-label=label><img :src="'data:image/png;base64,' + value"/></img></td>
-                          </template>
 
-                          <template v-else-if="label == 'ImageURL'">
-                            <td :data-label=label>
-                              <img v-on:click="inference=row ; showModal({'name': 'view-image', 'src': value})" :src=value></img>
-                            </td>
-                          </template>
+             <cv-data-table-cell>
+               <template v-if="row['Class'].includes('|')">
+                  <li v-for="cls in row['Class'].split('|')">
+                      {{cls}}
+                  </li>
+               </template>
+               <template v-else>
+                   {{row['Class']}}
+               </template>
+             </cv-data-table-cell>
 
-                          <template v-else-if="(label == 'Heatmap/Boxes')">
-                            <td :data-label=label><img :src="'data:image/png;base64,'+ value" ></img></td>
-                          </template>
+             <cv-data-table-cell>
+               <template v-if="row['Score'].includes('|')">
+                  <li v-for="score in row['Score'].split('|')">
+                      {{score}}
+                  </li>
+               </template>
+               <template v-else>
+                   {{row['Score']}}
+               </template>
+             </cv-data-table-cell>
 
-                          <template v-else-if="label == 'Class'">
-                            <td :data-label=label>
-                                <!-- <li v-for="cls in value.split('|')"> -->
-                                  {{ value }}
-                                <!-- </li> -->
-                            </td>
-                          </template>
+             <template v-if="Object.keys(row).includes('Time')">
+               <cv-data-table-cell>
+                 <p>{{row['Time']}}</p>
+               </cv-data-table-cell>
+             </template>
 
-                          <template v-else-if="label == 'Score'">
-                            <td :data-label=label>
-                              <!-- {{value.split('|')}} -->
-                              <!-- <li v-for="score in value.split('|')"> -->
-                                {{ value }}
-                              <!-- </li> -->
-                            </td>
-                          </template>
+             <template v-if="Object.keys(row).includes('FormattedDate')">
+               <cv-data-table-cell >{{row['FormattedDate']}}</cv-data-table-cell>
+             </template>
 
-                          <template v-else>
-                            <td :data-label=label>{{value}} </td>
-                          </template>
-                      </template>
-                    </template>
-                </template>
+             <!-- <cv-data-table-cell>
+               <p>{{row['']}}</p>
+             </cv-data-table-cell> -->
 
-                <!-- <template v-for="header in inference_headers" > -->
-                <!-- <template v-for="(value, label) in row" >
-                  <template v-if="label == 'Thumbnail'">
-                    <td :data-label=label>
-                      <img :src="'data:image/png;base64,' + value"/></img>
-                    </td>
-                  </template>
+          </cv-data-table-row>
+        </template>
+      </cv-data-table>
+     </div>
+    </div>
 
-                  <template v-else-if="label == 'ImageURL'">
-                    <td :data-label=label>
-                      <img :src=value></img>
-                    </td>
-                  </template>
-
-                  <template v-else-if="label == 'Heatmap'">
-                      <td :data-label=label>
-                        <img :src="'data:image/png;base64,' + value"/></img>
-                      </td>
-                  </template>
-
-                  <template v-else>
-                    <td :data-label=label> {{value}} </td>
-                  </template>
-                </template> -->
-
-                <!-- <template v-for="(value, label) in row" >
-                  <template v-if="inference_headers.includes(label)">
-                    <template v-if="label == 'Thumbnail'">
-                      <td :data-label=label><img :src="'data:image/png;base64,' + value"/></img></td>
-                    </template>
-                    <template v-else-if="label == 'URL'">
-                      <td :data-label=label></td>
-                    </template>
-
-                    <template v-else>
-                      <td :data-label=label>{{value}}    {{label}}</td>
-                    </template>
-                  </template>
-                </template> -->
-              </tr>
-            </template>
-          </template>
-        </tbody>
-      </table>
 
 
 
@@ -582,8 +420,6 @@
 
 <script>
   import 'vfc/dist/vfc.css'
-  import './dist/json-tree.css'
-
   import {
     Input
   } from 'vfc'
@@ -621,35 +457,27 @@
           console.log("inference.value")
           console.log(inference.value)
           console.log(Object.keys(inference.value))
-          // console.log(inference.value.heatmap)
 
           var ctx = canvasElement.getContext("2d");
-          var can_w = ctx.canvas.width //= 400
-          var can_h = ctx.canvas.height //= 500
-          // var ch = canvasElement.height /
+          var can_w = ctx.canvas.width
+          var can_h = ctx.canvas.height
           var colors = ['red', 'blue', 'green', 'yellow', 'purple']
           var heatmap = new Image
-          heatmap.id = "heatmap" //_" + inference.value['_id'];
-          // console.log("heatmap_" + inference.value['_id'])
+          heatmap.id = "heatmap"
           console.log('_id')
-          // console.log(inference.value['_id'])
           var i = new Image
-          i.id = "image" //_" + inference.value['_id'];
-
+          i.id = "image"
           i.onload = function() {
-              // ctx.drawImage(i, 0,0, 100, 100 * imageObj.height / imageObj.width)
-              // ctx.drawImage(i, 0, 0)
               console.log("creating thumbnail canvas image")
               var img_w = this.width
               var img_h = this.height
               var can_w = ctx.canvas.width //= 400
               var can_h = ctx.canvas.height //= 500
-
               // var hRatio = canvasElement.width / img_w    ;
               // var vRatio = canvasElement.height / img_h  ;
               console.log(`img_h ${img_h} img_w ${img_w} can_w ${can_w} can_h ${can_h}`)
-              var vRatio = 1 //can_h / img_h ;
-              var hRatio = 1 //can_w / img_w ;
+              var vRatio = 1
+              var hRatio = 1
 
               ctx.canvas.width = img_w
               ctx.canvas.height = img_h
@@ -658,29 +486,14 @@
               console.log('ratio')
               console.log(ratio)
               ctx.globalAlpha = 0.9;
-
               var centerShift_x = 0//( canvasElement.width - hRatio*img_w ) / 2;
               var centerShift_y = 0//( canvasElement.height - vRatio*img_h ) / 2;
-
-              // var centerShift_x = ( canvasElement.width - img_w*ratio ) / 2;
-              // var centerShift_y = ( canvasElement.height - img_h*ratio ) / 2;
-              // ctx.drawImage(i, 0, 0, img_w, img_h, centerShift_x,centerShift_y,img_w*ratio, img_h*ratio ) //, 100, 100 * imageObj.height / imageObj.width)
-              // ctx.drawImage(i, 0, 0, img_w, img_h, centerShift_x,centerShift_y,img_w*hRatio, img_h*vRatio ) //, 100, 100 * imageObj.height / imageObj.width)
               ctx.drawImage(i, 0, 0, img_w, img_h)//, centerShift_x,centerShift_y,img_w, img_h ) //, 100, 100 * imageObj.height / imageObj.width)
-
-              // ctx.drawImage(i, 0, 0, img_w, img_h, 0,0,img_w*ratio, img_h*ratio ) //, 100, 100 * imageObj.height / imageObj.width)
-              if (inference.value['AnalysisType'] == 'Object Detection') {
-                // inference['classified']
+              if (inference.value['InferenceType'] == 'ObjectDetection') {
                 // "classified":[{"confidence":0.9998242259025574,"ymax":153,"label":"helmet","xmax":236,"xmin":136,"ymin":8},{"confidence":0.7896438241004944,"ymax":492,"label":"safety_vest","xmax":314,"xmin":114,"ymin":143}]
                 console.log("drawing boxes")
-                // console.log(inference.value['Class'])
-                // inference.value['classified'].map( (o, idx) => {
                 console.log(inference.value['Class'])
                 inference.value['Class'].split('|').map( (b, idx) => {
-                  // context.rect(x,y,width,height)
-                  // ctx.rect(20, 20, 150, 100);
-                  // var ratio = 0.5 // 0.7220216606498195
-                  // var y_offset = -150
                   var coords = inference.value['Heatmap/Boxes'].split('|')[idx].split('-')
                   var o = {
                     xmin: coords[1],
@@ -696,21 +509,18 @@
                   ctx.lineWidth = "6";
                   ctx.strokeStyle = colors[idx % colors.length];
                   ctx.fillStyle = colors[idx % colors.length];
-                  // ctx.strokeStyle = "blue";
                   console.log(`xmin ${o['xmin']}, ymax ${o['ymax']}, hRatio ${hRatio} vRatio ${vRatio}`)
                   console.log(`w ${w}, h ${h}, tl_x ${tl_x}, tl_y ${tl_y} ` )
                   ctx.beginPath()
                   ctx.font = "40px Arial";
                   console.log(`writing class: ${b} ${o['xmin']} ${o['ymin']}`)
-                  // ctx.fillText(b, o['xmin'] + 20, o['ymin'] + 20)
                   ctx.fillText(b, tl_x , tl_y )
                   ctx.rect( tl_x, tl_y, w, h )
-                  // ctx.rect( tl_x + centerShift_x, tl_y + centerShift_y, w, h )
-                  // ctx.rect( tl_x + centerShift_x, tl_y + centerShift_y + y_offset, w, h )
                   ctx.stroke()
                 })
               } else {
                 heatmap.onload = function() {
+                    console.log("drawing heatmap")
                     var img_w = this.width
                     var img_h = this.height
                     var hRatio = canvasElement.width / img_w    ;
@@ -727,14 +537,24 @@
                 }
                 heatmap.style.opacity = 0.1
                 heatmap.style['z-index'] = 100
-                heatmap.src = inference['value']['heatmap']
+                console.log("inference['value']")
+                console.log(inference['value'])
+                if (inference['value']['ImageURL']) {
+                  var s = inference['value']['ImageURL'].split('.')
+                  var image_type = s[s.length - 1]
+                }
+                heatmap.src = 'data:image/' + image_type + ';base64,' + inference['value']['Heatmap/Boxes']
               }
           }
-          // i.style.opacity = 0.1
-          // console.log("thumbnail")
-          // console.log(inference['value']['url'] + inference['value']['thumbnail_path'])
-          // i.src = inference['value']['url'] + inference['value']['thumbnail_path']
-          i.src = inference['value']['ImageURL']
+          if (Object.keys(inference['value']).includes('ImageURL')) {
+            i.src = inference['value']['ImageURL']
+          } else {
+            console.log("writing thumbnail")
+            console.log('data:image/' + 'png' + ';base64,' + inference['value']['Thumbnail'])
+            i.src = 'data:image/' + 'png' + ';base64,' + inference['value']['Thumbnail']
+          }
+
+          console.log(`drawing image at ${inference['value']['ImageURL']}` )
           console.log(`canvasElement.width ${canvasElement.width}` )
           console.log(`canvasElement.height ${canvasElement.height}` )
       }
@@ -754,9 +574,10 @@
         inference_data: {},
         fields: [],
         inference_rows: [],
+        inference_rows_original: [],
+        inference_rows_filtered: [],
         query: '',
         tableData: [],
-        inference_rows_filtered: [],
         // token: (localStorage['token'] || ''),
         // user_fields: [],
         // user_type: '',
@@ -802,25 +623,31 @@
         filter_compare_type: "",
         search_query: "",
         inference_results: {},
-        // inference_headers: [
-        //   "Thumbnail",
-        //   "DataSetName",
-        //   'Class',
-        //   'Score',
-        //   'Type',
-        //   'FormattedDate',
-        //   'Location'
-        // ],
+        csv_type: "",
+        mobile_inference_headers: [
+          "Thumbnail",
+          "DataSetName",
+          'Class',
+          'Score',
+          'Type',
+          'FormattedDate',
+          'Location'
+        ],
+        mapping: {
+          "Class": "Metadata0",
+          "Score": "Metadata1",
+          "Heatmap/Boxes": "Metadata4",
+          "ImageURL": "Thumbnail"
+        },
+        // inference_headers: [],
         inference_headers: [
           "ImageURL",
-          "AnalysisType",
+          "InferenceType",
           "Heatmap/Boxes",
           'Class',
           'Score',
           'Time'
         ],
-
-
         lineGraphLayout: {
           title: 'Objects Time Series',
           xaxis: {
@@ -864,6 +691,7 @@
       },
       dropHandler(ev) {
         console.log('File(s) dropped');
+        // hideModal({'name': 'upload-modal'})
         // Prevent default behavior (Prevent file from being opened)
         ev.preventDefault();
         this.$data.filenames = []
@@ -873,76 +701,46 @@
             // If dropped items aren't files, reject them
             if (ev.dataTransfer.items[i].kind === 'file') {
               var file = ev.dataTransfer.items[i].getAsFile();
-              // var meta = ev.dataTransfer.items[i].getMetadata();
-              // console.log(meta)
               var s = file.text().then( (text) => {
                 this.$data.inference_rows = []
-                // this.$data.inference_headers = []
                 var rows = text.split(/\r\n|\n/)
                 var h = rows[0].split(',');
+                // if ( h.length > 10 ) {
+                //   csv_type = "Mobile"
+                // }
                 // this.$data.inference_headers = h
-
-                // var headers = [h.map( (header) => { return {"text": header, "value": header } } )]
+                var min_row_length = 20 // TODO, added here in case of empty row / trailing spaces in csv.
                 var row_data = {}
                 var h_obj = h.map( (h) => { row_data[h] = "" } )
-
                 if (h_obj) {
                   rows.slice(1).map( (r, r_idx) => {
                       var row_elements = r.split(',')
                       var row_data_copy = Object.create(row_data)
                       row_elements.map( (c, idx) => {
-                        // print(`adding column data ${c} ${idx}`)
+                        console.log(`adding column data ${c} ${idx}`)
                         row_data_copy[h[idx]] = c
                         // console.log( `${idx} / ${row.length - 1}` )
-                        if (idx == (row_elements.length - 1)) {
+
+                        if ((idx == (row_elements.length - 1)) && (JSON.stringify(row_data_copy).length > min_row_length)) {
                           console.log(`appending row ${r_idx}`)
                           console.log(JSON.stringify(row_data_copy))
                           this.$data.inference_rows.push(row_data_copy)
+                          this.$data.inference_rows_original.push(row_data_copy)
                         }
                       })
                   })
                 }
-
-                /*
-                // row_data
-                if (h_obj) {
-                  rows.slice(1).map( (r, r_idx) => {
-                      var row = r.split(',')
-                      var row_data_copy = Object.create(row_data)
-                      row.map( (c, idx) => {
-                        // print(`adding column data ${c} ${idx}`)
-                        row_data_copy[h[idx]] = c
-                        // console.log( `${idx} / ${row.length - 1}` )
-                        if (idx == (row.length - 1)) {
-                          console.log(`appending row ${r_idx}`)
-                          console.log(JSON.stringify(row_data_copy))
-                          this.$data.inference_rows.push(row_data_copy)
-                        }
-                      })
-                  })
-                }
-                */
-
-              } ) //ev.dataTransfer.getData("text")
-
+              } )
               console.log('... file[' + i + '].name = ' + file.name);
               console.log("printing text")
-
               this.$data.filenames.push(file.name)
               this.$data.files.push(file)
-              // fetch(file).then( (response) => {
-              //   response.text().then((text) => {
-              //       console.log("file text")
-              //       console.log(text)
-              //     })
-              //  })
              }
             }
           } else {
               // Use DataTransfer interface to access the file(s)
               for (var i = 0; i < ev.dataTransfer.files.length; i++) {
                 console.log('... file[' + i + '].name = ' + ev.dataTransfer.files[i].name);
-
               }
             }
       },
@@ -950,29 +748,27 @@
         var filter_header = this.$data.filter_header
         var filter_compare_type = this.$data.filter_compare_type
         var filter_value = this.$data.filter_value
-                // filter_header, filter_compare_type, filter_value
         // query column based on options
         // valid options are "less than", "greater than", "equal to", "contains"
         console.log("adding filter")
         console.log(filter_header, filter_compare_type, filter_value)
         var ts = Date.now()
         var filter = {}
-        // filter[ts] = [filter_header, filter_compare_type, filter_value]
         this.$data.activeFilters[ts] = [filter_header, filter_compare_type, filter_value] //.push( filter )
         if (filter_compare_type == 'less') {
-          var filtered_rows = this.$data.inference_rows.filter(row => parseFloat(row[filter_header]) < parseFloat(filter_value))
+          var filtered_rows = this.$data.inference_rows_original.filter(row => parseFloat(row[filter_header]) < parseFloat(filter_value))
           this.$data.inference_rows_filtered = filtered_rows
           console.log(`reduced to ${filtered_rows.length}`)
         } else if (filter_compare_type == 'greater') {
-          var filtered_rows = this.$data.inference_rows.filter(row => parseFloat(row[filter_header]) > parseFloat(filter_value))
+          var filtered_rows = this.$data.inference_rows_original.filter(row => parseFloat(row[filter_header]) > parseFloat(filter_value))
           this.$data.inference_rows_filtered = filtered_rows
           console.log(`reduced to ${filtered_rows.length}`)
         } else if (filter_compare_type == 'equal') {
-          var filtered_rows = this.$data.inference_rows.filter(row => row[filter_header] == filter_value)
+          var filtered_rows = this.$data.inference_rows_original.filter(row => row[filter_header] == filter_value)
           this.$data.inference_rows_filtered = filtered_rows
           console.log(`reduced to ${filtered_rows.length}`)
         } else if (filter_compare_type == 'contains') {
-          var filtered_rows = this.$data.inference_rows.filter(row => row[filter_header].includes(filter_value))
+          var filtered_rows = this.$data.inference_rows_original.filter(row => row[filter_header].includes(filter_value))
           this.$data.inference_rows_filtered = filtered_rows
           console.log(`reduced to ${filtered_rows.length}`)
           // console.log("filtered to " this.$data.inference_rows_filtered)
@@ -981,7 +777,7 @@
       filterRows(){
         var filters = this.$data.activeFilters
         var filterFuncs = []
-        var filtered_rows_total = this.$data.inference_rows
+        var filtered_rows_total = this.$data.inference_rows_original
         Object.keys(filters).map( (ts, idx) => {
           // filters[ts]
           var filter_header = filters[ts][0]
@@ -1001,28 +797,28 @@
           if (filter_compare_type == 'less') {
             filtered_rows_total = filtered_rows_total.filter(row => parseFloat(row[filter_header]) < parseFloat(filter_value))
             if (idx == (filters.length - 1)) {
-              this.$data.inference_rows_filtered = filtered_rows_total
+              this.$data.inference_rows = filtered_rows_total
             }
             // this.$data.inference_rows_filtered = filtered_rows
             // console.log(`reduced to ${filtered_rows.length}`)
           } else if (filter_compare_type == 'greater') {
             filtered_rows_total = filtered_rows_total.filter(row => parseFloat(row[filter_header]) > parseFloat(filter_value))
             if (idx == (filters.length - 1)) {
-              this.$data.inference_rows_filtered = filtered_rows_total
+              this.$data.inference_rows = filtered_rows_total
             }
             // this.$data.inference_rows_filtered = filtered_rows
             // console.log(`reduced to ${filtered_rows.length}`)
           } else if (filter_compare_type == 'equal') {
             filtered_rows_total = filtered_rows_total.filter(row => row[filter_header] == filter_value)
             if (idx == (filters.length - 1)) {
-              this.$data.inference_rows_filtered = filtered_rows_total
+              this.$data.inference_rows = filtered_rows_total
             }
             // this.$data.inference_rows_filtered = filtered_rows
             // console.log(`reduced to ${filtered_rows.length}`)
           } else if (filter_compare_type == 'contains') {
             filtered_rows_total = filtered_rows_total.filter(row => row[filter_header].includes(filter_value))
             if (idx == (filters.length - 1)) {
-              this.$data.inference_rows_filtered = filtered_rows_total
+              this.$data.inference_rows = filtered_rows_total
             }
             // this.$data.inference_rows_filtered = filtered_rows
             // console.log(`reduced to ${filtered_rows.length}`)
@@ -1041,8 +837,8 @@
             // this.$data.activeFilters.pop(aFilters)
             delete this.$data.activeFilters[filter]
             console.log(this.$data.activeFilters)
-            var filtered_rows = this.$data.inference_rows.filter(row => row[filter_header].includes(filter_value))
-            this.$data.inference_rows_filtered = filtered_rows
+            var filtered_rows = this.$data.inference_rows_original.filter(row => row[filter_header].includes(filter_value))
+            this.$data.inference_rows = filtered_rows
             // this.$data.inference_rows_filtered = filtered_rows
           }
         } )
@@ -1074,7 +870,7 @@
         var query = this.$data.search_query //this.$data.query
         console.log("performing search for: " + query)
         // this.$data.inference_rows_filtered = this.$data.inference_rows.filter(row => JSON.stringify(row.map( s =>  ([s.DataSetName, s.Class, s.Score, s.Type, s.FormattedDate, s.Location]) )  ).toLowerCase().includes(query.toLowerCase()))
-        this.$data.inference_rows_filtered = this.$data.inference_rows.filter(row => JSON.stringify(([row.DataSetName, row.Class, row.Score, row.Type, row.FormattedDate, row.Location])  ).toLowerCase().includes(query.toLowerCase()))
+        this.$data.inference_rows = this.$data.inference_rows_original.filter(row => JSON.stringify(([row.DataSetName, row.Class, row.Score, row.Type, row.FormattedDate, row.Location])  ).toLowerCase().includes(query.toLowerCase()))
         this.formatCircle()
         // TODO, allow multi search, split by query and
         // console.log("this.$data.inferenceDetails")
@@ -1087,10 +883,10 @@
         // TODO, add check to determine if all numbers
         // s.match(/^[0-9]+$/)
         if (sortAscending) {
-          this.$data.inference_rows_filtered = this.$data.inference_rows_filtered.sort((a, b) => (a[column].toLowerCase() >= b[column].toLowerCase()) ? 1 : -1)
+          this.$data.inference_rows = this.$data.inference_rows.sort((a, b) => (a[column].toLowerCase() >= b[column].toLowerCase()) ? 1 : -1)
           this.$data.sortAscending = (! this.$data.sortAscending)
         } else {
-          this.$data.inference_rows_filtered = this.$data.inference_rows_filtered.sort((a, b) => (a[column].toLowerCase() < b[column].toLowerCase()) ? 1 : -1)
+          this.$data.inference_rows = this.$data.inference_rows.sort((a, b) => (a[column].toLowerCase() < b[column].toLowerCase()) ? 1 : -1)
           this.$data.sortAscending = (! this.$data.sortAscending)
         }
 
@@ -1111,14 +907,48 @@
         const link = document.createElement('a')
         link.href = url
         link.setAttribute('download', 'file.png') //or any other extension
-
         document.body.appendChild(link)
         link.click()
       },
       loadCSV() {
         // $data.rows =
       },
-      downloadReports(){
+      printElem() {
+          // taken from https://stackoverflow.com/a/2255438
+          var elem = "table_container"
+          var mywindow = window.open('', 'PRINT', 'height=400,width=600');
+          mywindow.document.write('<html><head><title>' + document.title  + '</title>');
+          mywindow.document.write('</head><body >');
+          mywindow.document.write('<h1>' + document.title  + '</h1>');
+          mywindow.document.write(document.getElementById(elem).innerHTML);
+          mywindow.document.write('</body></html>');
+          mywindow.document.close(); // necessary for IE >= 10
+          mywindow.focus(); // necessary for IE >= 10*/
+
+          mywindow.print();
+          mywindow.close();
+
+          return true;
+      },
+      downloadReports2(){
+        var pdf = new this.$jsPDF();
+        var filename = "vis_insights_chart.pdf"
+
+        if (this.$data.inference_rows_filtered.length > 0) {
+          var rows = this.$data.inference_rows_filtered
+          console.log("adding filtered rows to pdf")
+        } else {
+          var rows = this.$data.inference_rows
+          console.log("adding all rows to pdf")
+        }
+
+        pdf.fromHTML( document.getElementById('table_container'), 10, 10, {'width': 180});
+        // pdf.autoPrint();
+        pdf.output("dataurlnewwindow"); // this opens a new popup,  after this the PDF opens the print window view but there are browser inconsistencies with how this is handled
+        pdf.save(filename)
+
+      },
+      downloadReports1(){
         console.log("generating pdf")
         var pdf = new this.$jsPDF();
         var filename = "vis_insights_chart.pdf"
@@ -1131,12 +961,14 @@
           console.log("adding all rows to pdf")
         }
 
+        printDoc.autoPrint();
+        printDoc.output("dataurlnewwindow"); // this opens a new popup,  after this the PDF opens the print window view but there are browser inconsistencies with how this is handled
+
         // doc.rect(40, 20, 10, 10); // filled square
         var headers = Object.keys(rows[0])
 
         // pdf.addPage('a4', 'p')
         var text_headers = this.$data.inference_headers //['DataSetName', 'Class', 'Score', 'URL', 'FormattedDate', 'Project' ]
-
         var inf_per_page = 5
         var num_pages = rows.length / inf_per_page
             // [...Array(num_pages - 1 ).keys()]
@@ -1173,11 +1005,32 @@
 
               console.log(`adding inf on page ${currentPage}`)
               console.log(`row ${row}`)
+              // if (Object.keys(row).includes('Thumbnail') && (row['Thumbnail'].length > 0)) {
               if (Object.keys(row).includes('Thumbnail') && (row['Thumbnail'].length > 0)) {
                 var imageString = 'data:image/png;base64,' + row['Thumbnail'] // TODO, detect image typw
                 // pdf.text(`image ${idx}`, 15, (40 * (idx + 1)))
                 console.log(`image y ${(40 * (idx + 1 - currentPage))}`)
                 pdf.addImage(imageString, 'PNG', 15, (50 * (( idx % inf_per_page ) + 1 )) , 45, 40)
+              } else if (Object.keys(row).includes('ImageURL') && (row['ImageURL'].length > 0)) {
+
+                var img = new Image();
+                img.crossOrigin = 'Anonymous';
+                img.onload = function() {
+
+                  var canvas = document.createElement('canvas');
+                  var ctx = canvas.getContext('2d');
+                  canvas.height = this.naturalHeight;
+                  canvas.width = this.naturalWidth;
+                  ctx.drawImage(this, 0, 0);
+                  var imageString = ctx.toDataURL()
+                  pdf.addImage(imageString, 'PNG', 15, (50 * (( idx % inf_per_page ) + 1 )) , 45, 40)
+                }
+                console.log("creating canvas")
+                console.log("setting url " + row['ImageURL'])
+                img.src = row['ImageURL']
+                if (img.complete || img.complete === undefined) {
+
+                }
               } else {
                 console.log("no image, skipping this row")
                 resolve()
@@ -1331,53 +1184,6 @@
         // pdf.text(headers.join(','), 10, 0)
 
       },
-      downloadImages() {
-        var zip = new this.$JSZip();
-        this.$data.renderInferences.map((inference, idx) => {
-          if (inference['video_out']) { //(Object.keys(inference).includes("video_out") && inference['video_out'] != null) {
-            var endpoint = inference.video_out
-            console.log("requesting video at: " + endpoint)
-          } else {
-            var endpoint = inference.thumbnail_path
-            console.log("requesting thumbnail at: " + endpoint)
-          }
-          var s = endpoint.split('/')
-          var fileName = s[s.length - 1]
-          var options = {
-            headers: {
-              'X-Proxy-URL': this.$data.url
-            }
-          }
-          fetch('http://localhost:30000/proxyget' + endpoint, options).then((res) => {
-            res.blob().then((content) => {
-              if (idx == (this.$data.renderInferences.length - 1)) {
-                console.log("adding " + fileName + " to zip")
-                var z = zip.file(fileName, content)
-                setTimeout(() => { // TODO, there definitely should be a better option than setTimeout, but jszip chaining isn't working
-                  console.log("z.files")
-                  console.log(z.files)
-                  z.generateAsync({
-                    type: "blob"
-                  }).then((blob) => {
-                    console.log("downloading zip")
-                    const url = window.URL.createObjectURL(blob) //new Blob([blob]))
-                    const link = document.createElement('a')
-                    link.href = url
-                    link.setAttribute('download', "images.zip") //or any other extension
-                    document.body.appendChild(link)
-                    link.click()
-                  })
-                }, 1000);
-              } else {
-                console.log("adding " + fileName + " to zip")
-                zip.file(fileName, content)
-              }
-            })
-          }).catch((err) => {
-            console.log(err)
-          })
-        })
-      },
       login() {
         console.log("requesting token")
         console.log(this.$data.input)
@@ -1442,167 +1248,6 @@
         if (URL && URL.createObjectURL) {
           newFile.blob = URL.createObjectURL(newFile.file)
         }
-      },
-      updateVideo(eventData) {
-        // console.log("eventData")
-        var x = eventData.points[0]['x']
-        var vid = document.getElementById("videoContainer")
-        vid.currentTime = x
-        vid.play()
-        console.log("skipping video to second:" + x)
-        // this.$refs["videoContainer"]
-        // console.log(this.$refs["detailedGraph"])
-        // console.log(this.$refs["detailedGraph"].$el._fullData[0].selected.markers.toString())
-        // console.log(this.$refs["detailedGraph"].$el._fullData[0])
-      },
-      submitInference() {
-        // post to powerai when user clicks "upload"
-        var e = document.getElementById("selectedModel");
-        var selectedModel = e.options[e.selectedIndex].value
-        this.$data.selectedModel = selectedModel //'ee5f1177-7ff1-4cd5-86d2-60faca266c71'
-        this.$data.files.map((file, f_idx) => {
-          var formData = new FormData()
-          formData.append('blob', file)
-          formData.append("genCaption", "true")
-          var options = {
-            method: "POST",
-            body: formData,
-            headers: {
-              // "X-Auth-Token": this.$data.token,
-              "X-Proxy-URL": this.$data.url
-            //   // "Content-Type": "multipart/form-data"
-            }
-          }
-          console.log("formData")
-          console.log(formData)
-          console.log("adding file: " + file.name)
-          // console.log('this.$data.url + "/dlapis/" + this.$data.selectedModel')
-          // console.log(this.$data.url + "/dlapis/" + this.$data.selectedModel)
-          // fetch(this.$data.url + "/dlapis/" + this.$data.selectedModel, options).then((res) => {
-          console.log("posting to: " + "http://localhost:30000/proxypost" + "/api/dlapis/" + selectedModel)
-          fetch("http://localhost:30000/proxypost" + "/api/dlapis/" + this.$data.selectedModel, options).then((res) => {
-            console.log("api call complete")
-            // this.$modal.hide('invoke-modal');
-            // console.log(res.text())
-            console.log(res)
-            res.json().then((result) => {
-              console.log("json")
-              console.log(result)
-              // this.$data.inferences.append(result)
-              // TODO, this only applies in case of a still image
-              var labels = Array.from(new Set(result.classified.map((c) => c.label)))
-              var endpoint = result.imageUrl.split('/uploads')[1]
-              // result.classified.filter((c) =>  )
-              this.$data.inferenceDetails[result.imageMd5] = {}
-              labels.map((l) => {
-                var r = result.classified.filter(c => c.label == l)
-                var count = r.length //Array.from((new Set(r))).length
-                console.log("count for " + l)
-                this.$data.inferenceDetails[result.imageMd5][l] = count
-              })
-
-              var inference = {
-                _id: result.imageMd5,
-                created_date: (new Date().toJSON()),
-                thumbnail_path: '/uploads' + endpoint,
-                status: result['result'],
-                model: result['webAPIId'],
-                percent_complete: 100
-              }
-              console.log("labels")
-              console.log(labels)
-              // this.$data.inferenceDetails[result.imageMd5] =  //result.classified
-              console.log("appending inference ")
-              console.log(inference)
-              this.$data.inferences.push(inference)
-            }).catch((err) => {
-              console.log("error parsing json")
-            })
-          }).catch((err) => {
-            console.log(err)
-          })
-          if (f_idx == (this.$data.files.length - 1)) {
-            this.$data.files = []
-          }
-        })
-      },
-      postInference() {
-        var options = {
-          method: "POST",
-          body: file
-          // headers: {
-          //   'Accept': 'application/json',
-          //   'Content-Type': 'application/json'
-          // }
-        }
-        const input = document.getElementById('fileinput');
-        const file = input.files[0]
-        fetch("http://localhost:30000/inferences", options).then((response) => {
-          response.json().then((json) => {
-            // TODO filter is only here to ignore shared inferences
-            this.$data.inferences = inf; // json
-            this.$data.renderInferences = inf //.filter(i => i.model_id == '3ac091c7-66ef-450a-8b7d-fa9e0cc748e6 	') // only need to do this initially
-            console.log("inferences received")
-            // localStorage.setItem('inferences', inferences)
-          })
-        })
-      },
-      getInferences() {
-        return new Promise((resolve, reject) => {
-          var options = {
-            method: "GET",
-            headers: {
-              'Accept': 'application/json',
-              'Content-Type': 'application/json',
-              "X-Proxy-URL": this.$data.url,
-              "X-Auth-Token": this.$data.token
-            }
-          }
-          fetch("http://localhost:30000/inferences", options).then((response) => {
-            response.json().then((json) => {
-              // TODO filter is only here to ignore shared inferences
-              var inf = json //.filter(i => i.model_id != '29dad520-4908-42fc-b118-9971b957bf8c')
-              this.$data.inferences = inf; // json
-              this.$data.renderInferences = inf //.filter(i => i.model_id == '3ac091c7-66ef-450a-8b7d-fa9e0cc748e6 	') // only need to do this initially
-              resolve(inf)
-              console.log("inferences received")
-              // localStorage.setItem('inferences', inferences)
-            })
-          })
-        })
-      },
-      getInferenceDetails() {
-        var options = {
-          method: "GET",
-          headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json'
-          }
-        }
-        setTimeout(() => {
-          fetch("http://localhost:30000/inferencedetailed", options).then((response) => {
-            console.log(response)
-            response.json().then((json) => {
-              console.log("inference details received")
-              console.log(JSON.stringify(json))
-              this.$data.inferenceDetails = json
-            }).catch((err) => {
-              console.log("failure receiving detailed data")
-              console.log(err)
-            })
-          })
-        }, 2000)
-
-      },
-      setInference(inferenceId) {
-        console.log("setting inference")
-        // console.log(event.explicitOriginalTarget.offsetParent.offsetParent)
-        // var inference = event.explicitOriginalTarget.offsetParent.offsetParent.attributes['inference'].nodeValue
-        console.log(inferenceId)
-        this.$data.selectedInference = inferenceId
-        // self.getInferenceDetails()
-        // self.formatLine(inferenceId)
-        // selectedInference
       },
       formatLine(inferenceId) {
         if (this.$data.inferenceDetails) {
@@ -1804,12 +1449,19 @@
   }
 
   #drop_zone {
-    border: 2px dashed #eaecee;
-    width: 400px;
-    height: 300px;
+    /* border: 2px dashed #eaecee; */
+    /* width: 400px; */
+    /* height: 300px; */
     margin: auto;
   }
 
+  li {
+    /* background: #cce5ff; */
+    /* margin: 5px; */
+    margin: 0;
+    padding: 0;
+    list-style-type: none;
+  }
 
   select {
     margin: 50px;
@@ -1823,7 +1475,6 @@
 
 </style>
 
-<!-- TODO, readd this for carbon -->
 <!-- <style lang="scss">
 @import "./styles/carbon";
 </style> -->

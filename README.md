@@ -4,7 +4,7 @@ In this Code Pattern we will demonstrate a dashboard that'll enable users to ext
 
 When the reader has completed this Code Pattern, they will understand how to extract information from an IBM Maximo Visual Inspection instance as a CSV file, and how to visualize and filter the data within a web browser.
 
-This code pattern is targeted towards users who have uploaded images to an IBM Maximo Visual Inspection instance via the Visual Inspector iOS application.
+This code pattern is targeted towards users who have uploaded images to an IBM Maximo Visual Inspection instance via the Maximo Visual Inspection Mobile iOS application.
 
 
 <!-- The intended audience for this Code Pattern -->
@@ -19,13 +19,13 @@ This code pattern is targeted towards users who have uploaded images to an IBM M
 
 Sign up for a trial account of IBM Maximo Visual Inspection [here](https://developer.ibm.com/linuxonpower/deep-learning-powerai/try-powerai/). This link includes options to provision a IBM Maximo Visual Inspection instance either locally on in the cloud.
 
-* [IBM Visual Inspector](https://apps.apple.com/us/app/ibm-visual-inspector/id1486600972). This is an iOS application that allows users to upload images to Visual Insights from their mobile devices.
+* [IBM Maximo Visual Inspection Mobile](https://apps.apple.com/us/app/ibm-visual-inspector/id1486600972). This is an iOS application that allows users to upload images to Maximo Visual Inspection APIs from their mobile devices.
 
 
 # Flow
 
-1. Upload images using IBM Visual Inspector app
-2. Train image inference model in IBM Maximo Visual Inspection via Visual Inspector app
+1. Upload images using IBM Maximo Visual Inspection Mobile app
+2. Train image inference model in IBM Maximo Visual Inspection via Maximo Visual Inspection Mobile app
 3. Run Python script to extract inference data as CSV
 4. Upload CSV to dashboard and view results
 
@@ -36,7 +36,7 @@ Sign up for a trial account of IBM Maximo Visual Inspection [here](https://devel
 
 * Node.js
 
-Skip to [Steps](#visual-insights-table) if you already have node.js installed on your system.
+Skip to [Steps](#maximo-visual-table) if you already have node.js installed on your system.
 
 ### Install Node.js packages
 
@@ -67,22 +67,22 @@ nvm use 8.9.0
 
 Follow these steps to setup and run this Code Pattern.
 
-1. [Upload images using IBM Visual Inspector app](#1-upload-images-using-ibm-visual-inspector-app)
+1. [Upload images using IBM Maximo Visual Inspection Mobile app](#1-upload-images-using-ibm-visual-inspector-app)
 2. [Clone repository](#2-clone-repository)
 3. [Extract image data as CSV](#3-extract-image-data-as-csv)
 4. [Load data into dashboard](#4-load-data-into-dashboard)
 
 <!-- 5. [Create a Dashboard](#4-create-dashboard) -->
-## 1. Upload images using IBM Visual Inspector app
+## 1. Upload images using IBM Maximo Visual Inspection Mobile app
 
 
 [![Video Tutorial](https://i.imgur.com/OL5YQ1n.png)](https://www.youtube.com/watch?v=-jMIPusx6jg&feature=youtu.be&t=48)
 
 Click image above to be guided through a step by step video tutorial.
 
-- Download Visual Inspector from [App Store](https://apps.apple.com/us/app/ibm-visual-inspector/id1486600972)
+- Download Maximo Visual Inspection Mobile from [App Store](https://apps.apple.com/us/app/ibm-visual-inspector/id1486600972)
 
-- Open Visual Inspector app and register device
+- Open Maximo Visual Inspection Mobile app and register device
 
 - Enter "Name" and "Location" and then click "Next"
 
@@ -112,13 +112,13 @@ Click image above to be guided through a step by step video tutorial.
 Clone repository using the git cli
 
 ```
-git clone https://github.com/IBM/visual-insights-table
+git clone https://github.com/IBM/maximo-visual-table
 ```
 
 Navigate to the project folder
 
 ```
-cd visual-insights-table
+cd maximo-visual-table
 ```
 
 ## 3. Extract image inference data as CSV
@@ -131,11 +131,11 @@ cd vision-inspector-dump
 Run the `visual_inspector_dump.py` python script which requires your visual insights credentials (username, password, and url).
 
 
-<!-- python3 visual_inspector_dump.py  --url https://<url>/<visual-insights-ID> --user <username> --passwd <password>  --output test.csv -->
+<!-- python3 visual_inspector_dump.py  --url https://<url>/<maximo-visual-ID> --user <username> --passwd <password>  --output test.csv -->
 ```
 python visual_inspector_dump.py --user <username>
                                 --passwd <password>
-                                --url https://<url>/<visual-insights-ID>
+                                --url https://<url>/<maximo-visual-ID>
                                 --output output.csv
 ```
 
