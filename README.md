@@ -86,7 +86,7 @@ Click image above to be guided through a step by step video tutorial.
 
 - Enter "Name" and "Location" and then click "Next"
 
-- Enter the following IBM Maximo Visual Inspection credentials in the "Global Settings" section. These should be included in your Welcome Letter received when you activated the Visual Insights service
+- Enter the following IBM Maximo Visual Inspection credentials in the "Global Settings" section. These should be included in your Welcome Letter received when you activated the Visual Inspection service
   - URL
   - Username
   - Password
@@ -128,7 +128,7 @@ Enter the `vision-inspector-dump` folder
 cd vision-inspector-dump
 ```
 
-Run the `visual_inspector_dump.py` python script which requires your visual insights credentials (username, password, and url).
+Run the `visual_inspector_dump.py` python script which requires your Visual Inspection credentials (username, password, and url).
 
 
 <!-- python3 visual_inspector_dump.py  --url https://<url>/<maximo-visual-ID> --user <username> --passwd <password>  --output test.csv -->
@@ -141,7 +141,7 @@ python visual_inspector_dump.py --user <username>
 
 See documentation for full list of options [here](#visual-inspector-dump)
 
-If the cli is able to successfully authenticate to the visual insights api, you'll see output similar to the following
+If the cli is able to successfully authenticate to the Visual Inspection api, you'll see output similar to the following
 
 <img src="https://i.imgur.com/ChbgPQw.png" />
 
