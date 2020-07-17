@@ -67,14 +67,9 @@ import {CvModal, CvList, CvSelect, CvFileUploader, CvDataTable, CvAccordion, CvA
 
 // */
 
-import InfTable from './components/InfTable.vue';
+// import InfTable from './components/InfTable.vue';
 // Vue.use(InfTable)
-Vue.component('inf-table', InfTable)
-// Vue.component('inf-table', {
-//   props: ['inference_headers', 'inference_rows'],
-//   // template: () => import('./components/InfTable.vue')
-//   template: InfTable
-// })
+// Vue.component('inf-table', InfTable)
 
 Vue.use(Drag)
 Vue.component('drag', Drag)
