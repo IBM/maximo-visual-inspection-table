@@ -1,3 +1,7 @@
+# WARNING: This repository is no longer maintained
+
+> This repository will not be updated. The repository will be kept available in read-only mode.
+
 # Generate and visualize video analytics using IBM Maximo Visual Inspection
 
 In this Code Pattern we will demonstrate a dashboard that'll enable users to extract image analysis data from an IBM Maximo Visual Inspection instance. This extracted data can be filtered and viewed within an interactive table. The displayed data can also be exported as a PDF report.
